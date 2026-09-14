@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Pipeline Execution Manifest",
+  "type": "object",
+  "required": [
+    "config",
+    "setup_script",
+    "modules_input_output_folder",
+    "execution_chain",
+    "description"
+  ],
+  "properties": {
+    "description": {
+      "type": "string",
+      "description": "A brief summary of the pipeline's purpose and expected outcome."
+    },
+    "config": {
+      "type": "string",
+      "description": "Path to the unified configuration file."
+    },
+    "setup_script": {
+      "type": "string",
+      "description": "The path to the shell script that provisions the global environment."
+    },
+    "modules_input_output_folder": {
+      "type": "string",
+      "description": "The directory path where all step inputs and outputs reside."
+    },
+    "execution_chain": {
+      "type": "array",
+      "description": "The sequence of repositories to clone and execute.",
+      "items": {
+        "type": "object",
+        "required": [
+          "order",
+          "repository_url",
+          "version_tag",
+          "input_file_name",
+          "output_file_name"
+        ],
+        "properties": {
+          "order": {
+            "type": "integer"
+          },
+          "repository_url": {
+            "type": "string"
+          },
+          "version_tag": {
+            "type": "string"
+          },
+          "input_file_name": {
+            "type": "string"
+          },
+          "output_file_name": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
