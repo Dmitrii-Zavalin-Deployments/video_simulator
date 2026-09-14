@@ -1,242 +1,24 @@
-name: Video simulator
+name: 🗄️ Storage & Validation
 
 on:
   push:
     branches:
       - "**"
   workflow_dispatch:
-  repository_dispatch:
-    types: [artifact_driven_simulation_engine]
+
+permissions:
+  contents: write
 
 jobs:
-  # verification_tests:
-  #   name: "📋 Verification Tests"
-  #   runs-on: ubuntu-latest
-  #   env:
-  #     PYTHONPATH: ${{ github.workspace }}
-  #     FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  #     ASAN_OPTIONS: "detect_leaks=0"
-  #     # Define the 'Gold Standard' test command here (e.g. # pytest -s tests/ -vv --cov=src --cov-report=term-missing)
-  #     TEST_COMMAND: "pytest -s tests/ -vv --cov=src --cov-report=term-missing"
-
-  #   steps:
-  #     - name: 🗂️ Checkout Repository
-  #       uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 0
-
-  #     - name: 🌐 Fix APT Mirrors
-  #       run: |
-  #         # Prevent runner hangs on Azure regional mirrors globally for the job
-  #         sudo sed -i 's|azure.archive.ubuntu.com|archive.ubuntu.com|g' /etc/apt/sources.list || true
-
-  #     # 🔧 ROBOT A IDENTITY + NOTES INITIALIZATION
-  #     - name: 🤖 Initialize Robot A Identity & Notes
-  #       run: |
-  #         # Normalize branch name for safe use in email (replace "/" with "-")
-  #         BRANCH_SAFE="${GITHUB_REF_NAME//\//-}"
-
-  #         # Set dynamic Robot A identity per branch
-  #         git config --global user.name "Automation Engine A (${BRANCH_SAFE})"
-  #         git config --global user.email "automation_a+${BRANCH_SAFE}@yourdomain"
-
-  #         # Ensure Git Notes are rewritten and preserved
-  #         git config --global notes.rewriteRef "refs/notes/*"
-
-  #     - name: 🐍 Set up Python
-  #       uses: actions/setup-python@v5
-  #       with:
-  #         python-version: "3.11"
-  #         cache: 'pip'
-
-  #     - name: 📦 Provision Environment Layers & Build via Requirements
-  #       run: |
-  #         python3 -m pip install --upgrade pip
-  #         chmod +x requirements.sh
-  #         ./requirements.sh
-
-  #     - name: 🌐 Install Headless Rendering Dependencies
-  #       run: |
-  #         # Establish virtual display device infrastructure and OpenGL bindings
-  #         sudo apt-get update -y
-  #         # libgl1 replaces the deprecated libgl1-mesa-glx on Ubuntu 24.04+
-  #         sudo apt-get install -y libgl1 xvfb libglu1-mesa
-
-  #     - name: 🧪 Execute C++, Python Bridge Tests, and Coverage
-  #       run: |
-  #         echo "🧪 Configuring OpenMP stack size for multi-threaded stability..."
-  #         export OMP_STACKSIZE=64M
-
-  #         # ==========================================
-  #         # PHASE 1: ASan Debugging Run (Memory Audit)
-  #         # ==========================================
-  #         echo "⚙️ [PHASE 1/4] Configuring CMake with AddressSanitizer (ASan) enabled for rigorous memory debugging..."
-  #         cmake -B build -S . \
-  #             -DCMAKE_BUILD_TYPE=Debug \
-  #             -DENABLE_ASAN=ON \
-  #             -DENABLE_COVERAGE=OFF
-          
-  #         cmake --build build --parallel $(nproc)
-
-  #         echo "🔬 [PHASE 1/4] Preloading libasan and executing C++ Test Suites via CTest (Debug & Memory Audit Run)..."
-  #         export LD_PRELOAD=$(g++ -print-file-name=libasan.so)
-  #         cd build
-  #         ctest --output-on-failure -V
-  #         cd ..
-  #         unset LD_PRELOAD
-
-  #         # ==========================================
-  #         # PHASE 2: Clean Re-build for Coverage (ASan OFF, Coverage ON)
-  #         # ==========================================
-  #         echo "⚙️ [PHASE 2/4] Re-configuring CMake with ASan disabled and Coverage enabled for reporting..."
-  #         # Purge stale or incompatible .gcda counters from the ASan build
-  #         find build -name "*.gcda" -delete
-
-  #         cmake -B build -S . \
-  #             -DCMAKE_BUILD_TYPE=Debug \
-  #             -DENABLE_ASAN=OFF \
-  #             -DENABLE_COVERAGE=ON
-          
-  #         cmake --build build --parallel $(nproc)
-
-  #         # ==========================================
-  #         # PHASE 3: Execution Run for Coverage (CTest & Pytest)
-  #         # ==========================================
-  #         echo "🧪 [PHASE 3/4] Executing C++ Test Suites (CTest) on Coverage Build (Reporting Run)..."
-  #         cd build
-  #         ctest --output-on-failure -V
-  #         cd ..
-
-  #         echo "🐍 [PHASE 3/4] Executing Python C++ bridge tests (Pytest) on Coverage Build..."
-  #         # Include repository root and build directory in PYTHONPATH
-  #         export PYTHONPATH=$PWD:$PWD/build:$PYTHONPATH
-  #         pytest cpp/python_bridge_tests/ -vv -s --tb=long
-
-  #         # ==========================================
-  #         # PHASE 4: Unified Coverage Report Generation
-  #         # ==========================================
-  #         echo "📊 [PHASE 4/4] Generating Unified Code Coverage Report across C++ and Python tests..."
-  #         gcovr --object-directory=build \
-  #               --filter="cpp/src" \
-  #               --exclude="cpp/cpp_unit_tests" \
-  #               --exclude="cpp/cpp_integration_tests" \
-  #               --print-summary \
-  #               --txt \
-  #               --xml coverage.xml
-
-  #     - name: 🧹 Auto-Clean (Autoflake)
-  #       run: |
-  #         autoflake --in-place --recursive --remove-unused-variables --remove-all-unused-imports src tests
-
-  #     - name: 🧹 Static Analysis & Lint (Ruff)
-  #       run: |
-  #         ruff check src tests --fix
-
-  #     - name: 🚀 Commit & Push Auto-Clean Changes
-  #       if: always()
-  #       run: |
-  #         git add .
-  #         if [ -n "$(git status --porcelain)" ]; then
-  #           git commit -m "🤖 robot a: auto-clean structural hygiene"
-  #           TARGET_COMMIT=$(git rev-parse HEAD)
-
-  #           # 1 Fetch remote notes FIRST
-  #           git fetch origin refs/notes/commits:refs/notes/commits || true
-
-  #           # 2 Add note locally
-  #           git notes add -f -m "robot: true" "$TARGET_COMMIT"
-
-  #           # 3 Push commit
-  #           git push origin HEAD || echo "Push skipped: branch protected."
-
-  #           # 4 Force-push notes
-  #           git push --force origin refs/notes/commits || true
-  #         else
-  #           echo "No hygiene changes detected."
-  #         fi
-
-  #     - name: 💀 Dead Code Audit (Vulture)
-  #       run: |
-  #         # Vulture exits with non-zero if dead code is found, triggering failure()
-  #         vulture src --min-confidence 70
-
-  #     - name: 🧪 Quality Gate Check
-  #       if: failure()
-  #       run: |
-  #         echo "CRITICAL: Dead code detected in src/. Review the Vulture logs above."
-  #         echo "Rule 2 (Zero-Debt Mandate) violation: Delete unused code before merging."
-  #         exit 1
-
-  #     - name: 🧪 Run Logic & Scientific Verification
-  #       run: |
-  #         echo "🚀 Initiating: $TEST_COMMAND inside virtual frame buffer"
-  #         xvfb-run --auto-servernum $TEST_COMMAND
-
-  #     - name: 🔍 Forensic Audit
-  #       if: always()
-  #       run: |
-  #         if [[ "${{ job.status }}" == "success" ]]; then
-  #           echo "✅ All systems nominal. No anomalies detected in solver lifecycle."
-  #           cat <<'EOF' > debug/forensic_audit_verification.sh
-  #         #!/bin/bash
-  #         # Description: Automated forensic audit for failures within this repository.
-  #         # Status: Dormant (All systems nominal)
-  #         exit 0
-  #         EOF
-  #           chmod +x debug/forensic_audit_verification.sh
-  #           echo "🧹 Diagnostic script has been reset to Dormant mode."
-  #         else
-  #           echo "⚠️ CI Failure Detected. Initiating Deep Forensic Audit..."
-  #           echo "============================================================"
-  #           echo "ls -R output:"
-  #           ls -R || echo "output dir not found"
-  #           echo "============================================================"
-  #           echo "debug/forensic_audit_verification.sh run results:"
-  #           if [ -f "debug/forensic_audit_verification.sh" ]; then
-  #             bash debug/forensic_audit_verification.sh
-  #           else
-  #             echo "❌ Critical: Diagnostic script 'debug/forensic_audit_verification.sh' not found."
-  #           fi
-  #           # echo "============================================================"
-  #           # echo "📉 RE-RUNNING FAILED TEST FOR FINAL SIGNAL"
-  #           # xvfb-run --auto-servernum $TEST_COMMAND || true
-  #           exit 1
-  #         fi
-
-  #     - name: 🧹 Sync Forensic Reset
-  #       # This only runs if the '🔍 Forensic Audit' step and tests passed
-  #       if: success()
-  #       run: |
-  #         git add debug/forensic_audit_verification.sh
-  #         if [ -n "$(git status --porcelain debug/forensic_audit_verification.sh)" ]; then
-  #           git commit -m "🤖 robot a: forensic reset [PASS]"
-  #           TARGET_COMMIT=$(git rev-parse HEAD)
-
-  #           # 1 Fetch remote notes FIRST
-  #           git fetch origin refs/notes/commits:refs/notes/commits || true
-
-  #           # 2 Add note locally
-  #           git notes add -f -m "robot: true" "$TARGET_COMMIT"
-
-  #           # 3 Push commit
-  #           git push origin HEAD || echo "Push skipped: concurrent push detected."
-
-  #           # 4 Force-push notes
-  #           git push --force origin refs/notes/commits || true
-  #         else
-  #           echo "Forensic script already dormant."
-  #         fi
-
-  validation_tests:
-    name: "🔬 Validation Tests"
-    # needs: verification_tests
+  validation_check:
+    name: "🗄️ Storage & Validation"
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
     env:
       PYTHONPATH: ${{ github.workspace }}
-      ASAN_OPTIONS: "detect_leaks=0"
-      APP_KEY: ${{ secrets.APP_KEY }}
-      APP_SECRET: ${{ secrets.APP_SECRET }}
-      REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: 🗂️ Checkout Repository
@@ -244,307 +26,432 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: 🌐 Fix APT Mirrors
+      - name: 🤖 Initialize Robot A Identity & Notes
         run: |
-          # Prevent runner hangs on Azure regional mirrors globally for the job
-          sudo sed -i 's|azure.archive.ubuntu.com|archive.ubuntu.com|g' /etc/apt/sources.list || true
-
-      # 🔧 ROBOT B IDENTITY + NOTES INITIALIZATION
-      - name: 🤖 Initialize Robot B Identity & Notes
-        run: |
-          # Normalize branch name for safe use in email (replace "/" with "-")
           BRANCH_SAFE="${GITHUB_REF_NAME//\//-}"
-
-          # Set dynamic Robot B identity per branch
-          git config --global user.name "Automation Engine B (${BRANCH_SAFE})"
-          git config --global user.email "automation_b+${BRANCH_SAFE}@yourdomain"
-
-          # Ensure Git Notes are rewritten and preserved
+          git config --global user.name "Automation Engine A (${BRANCH_SAFE})"
+          git config --global user.email "automation_a+${BRANCH_SAFE}@yourdomain"
           git config --global notes.rewriteRef "refs/notes/*"
 
       - name: 🐍 Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
-          cache: 'pip'
+          python-version: "3.10"
 
-      - name: 📦 Provision Environment Layers & C++ Build (Pip & CMake)
+      - name: 📦 Install Test Dependencies
         run: |
           python -m pip install --upgrade pip
-          chmod +x requirements.sh
-          ./requirements.sh
+          pip install pytest jsonschema jq
 
-      # - name: 🌐 Install Headless Rendering Dependencies
-      #   run: |
-      #     # Establish virtual display device infrastructure and OpenGL bindings
-      #     sudo apt-get update -y
-      #     # libgl1 replaces the deprecated libgl1-mesa-glx on Ubuntu 24.04+
-      #     sudo apt-get install -y libgl1 xvfb libglu1-mesa
+      - name: 🧪 Run Governance & Pipeline Sandbox Validation
+        run: |
+          echo "🚀 Initiating: Governance & Dynamic Sandbox Validation Suite"
+          
+          # Initialize metrics tracking logs
+          rm -f /tmp/cpu_track.log /tmp/pytest_mem.log /tmp/mem_sandbox_*.log
+          
+          # Spawn high-frequency active background CPU load sampler
+          while true; do
+            top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4}' >> /tmp/cpu_track.log 2>/dev/null || true
+            sleep 1
+          done &
+          SAMPLER_PID=$!
+          
+          TEST_EXIT_CODE=0
+          
+          # =========================================================================
+          # PHASE 1: Run Pytest Governance Suite
+          # =========================================================================
+          echo "🧪 Running Pytest Governance Validation..."
+          /usr/bin/time -v pytest tests/test_governance_validation.py -vv -s --log-cli-level=INFO 2> /tmp/pytest_mem.log || TEST_EXIT_CODE=1
+          
+          # =========================================================================
+          # PHASE 2: Run Dynamic Pipeline Sandbox Validations
+          # =========================================================================
+          if [ $TEST_EXIT_CODE -eq 0 ]; then
+            echo "🔍 Discovering and Sandboxing Pipelines..."
+            PIPELINE_FILES=$(find pipelines -maxdepth 1 -name "*.json" 2>/dev/null || true)
+            
+            if [ -z "$PIPELINE_FILES" ]; then
+              echo "⚠️ No pipeline JSON files found in pipelines/"
+            else
+              for pipeline_file in $PIPELINE_FILES; do
+                echo "=================================================="
+                echo "🚀 Sandboxing Pipeline: $pipeline_file"
+                echo "=================================================="
+                
+                PIPELINE_BASE=$(basename "$pipeline_file" .json)
+                SANDBOX_DIR="/tmp/sandbox_$PIPELINE_BASE"
+                mkdir -p "$SANDBOX_DIR"
+                
+                # Parse Setup Script Path
+                SETUP_SCRIPT=$(jq -r '.setup_script' "$pipeline_file")
+                echo "  ↳ Setup Script: $SETUP_SCRIPT"
+                
+                if [ "$SETUP_SCRIPT" != "null" ] && [ -n "$SETUP_SCRIPT" ]; then
+                  if [ -f "$SETUP_SCRIPT" ]; then
+                    echo "  ▶ Executing setup script in sandbox..."
+                    cp "$SETUP_SCRIPT" "$SANDBOX_DIR/"
+                    SCRIPT_NAME=$(basename "$SETUP_SCRIPT")
+                    chmod +x "$SANDBOX_DIR/$SCRIPT_NAME"
+                    
+                    # Track resource footprint of setup execution
+                    /usr/bin/time -v bash -c "cd $SANDBOX_DIR && ./$SCRIPT_NAME" 2> "/tmp/mem_sandbox_${PIPELINE_BASE}_setup.log" || {
+                      echo "❌ ERROR: Setup script $SETUP_SCRIPT failed in sandbox!"
+                      TEST_EXIT_CODE=1
+                      break
+                    }
+                  else
+                    echo "❌ ERROR: Setup script file $SETUP_SCRIPT specified in $pipeline_file does not exist!"
+                    TEST_EXIT_CODE=1
+                    break
+                  fi
+                fi
+                
+                # Parse and Process Execution Chain
+                echo "  ▶ Resolving and Cloning Execution Chain..."
+                CHAIN_LEN=$(jq '.execution_chain | length' "$pipeline_file")
+                
+                for ((i=0; i<CHAIN_LEN; i++)); do
+                  REPO_URL=$(jq -r ".execution_chain[$i].repository_url" "$pipeline_file")
+                  VERSION_TAG=$(jq -r ".execution_chain[$i].version_tag" "$pipeline_file")
+                  REPO_NAME=$(basename "$REPO_URL" .git)
+                  TARGET_PATH="$SANDBOX_DIR/modules/$REPO_NAME"
+                  
+                  # IDEMPOTENT CLONING LOGIC: Skip if directory exists
+                  if [ -d "$TARGET_PATH" ]; then
+                    echo "    - [$((i+1))/$CHAIN_LEN] Skipping $REPO_NAME; directory already exists at $TARGET_PATH."
+                  else
+                    echo "    - [$((i+1))/$CHAIN_LEN] Cloning $REPO_NAME ($VERSION_TAG) from $REPO_URL..."
+                    
+                    # Track resource footprint of git clone execution
+                    /usr/bin/time -v git clone --branch "$VERSION_TAG" --depth 1 "$REPO_URL" "$TARGET_PATH" 2> "/tmp/mem_sandbox_${PIPELINE_BASE}_clone_${i}.log" || {
+                      echo "❌ ERROR: Failed to clone $REPO_URL with tag $VERSION_TAG!"
+                      TEST_EXIT_CODE=1
+                      break 2
+                    }
+                  fi
+                done
+                
+                echo "✅ Sandbox for $pipeline_file verified successfully!"
+              done
+            fi
+          fi
+          
+          # Terminate background track sampler
+          kill $SAMPLER_PID
+          
+          # =========================================================================
+          # METRICS AGGREGATION
+          # =========================================================================
+          # Extract peak CPU load captured by sampler
+          PEAK_CPU=$(sort -n /tmp/cpu_track.log | tail -n 1)
+          if [ -z "$PEAK_CPU" ]; then PEAK_CPU="0.0"; fi
+          
+          # Read all memory profile files collectively to find the true overall peak RSS memory
+          MAX_RSS_KB=$(cat /tmp/pytest_mem.log /tmp/mem_sandbox_*.log 2>/dev/null | grep "Maximum resident set size" | awk '{print $6}' | sort -n | tail -n 1)
+          if [ -z "$MAX_RSS_KB" ]; then
+            MAX_RSS_MB=$(free -m | awk '/Mem:/ { print $3 }')
+          else
+            MAX_RSS_MB=$((MAX_RSS_KB / 1024))
+          fi
+          TOTAL_MEM_MB=$(free -m | awk '/Mem:/ { print $2 }')
+          
+          # Bind metrics to environment variables
+          echo "GOVERNANCE_ACTIVE_PEAK_CPU=${PEAK_CPU}%" >> $GITHUB_ENV
+          echo "GOVERNANCE_ACTIVE_PEAK_MEM=${MAX_RSS_MB}/${TOTAL_MEM_MB}MB" >> $GITHUB_ENV
+          
+          exit $TEST_EXIT_CODE
 
-      # - name: 🚀 Execute main.py with Live Profiling
-      #   run: |
-      #     # Initialize background performance tracker to capture accurate trends
-      #     rm -f /tmp/cpu_track.log /tmp/memory_profile.log
+      - name: 🏁 Validation Summary
+        if: always()
+        run: |
+          if [[ "${{ job.status }}" == "success" ]]; then
+            echo "✅ Governance Check Passed: All schemas and range configs are compliant."
+          else
+            echo "❌ Governance Check Failed: Please review the validator output above."
+            exit 1
+          fi
 
-      #     echo "Starting asynchronous background compute metrics sampler..."
-      #     while true; do
-      #       # Evaluates active utilization delta (user + system space) every second
-      #       top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4}' >> /tmp/cpu_track.log 2>/dev/null || true
-      #       sleep 1
-      #     done &
-      #     SAMPLER_PID=$!
+      - name: 🔒 Version & Lock Governance Assets
+        if: success()
+        run: |
+          # Target directories
+          DIRS=("configs" "pipelines" "setup_scripts")
+          
+          # Clean up any transient Python cache directories before tracking logic runs
+          echo "🧹 Purging transient __pycache__ directories..."
+          find . -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
+          
+          # =========================================================================
+          # 🛑 PRE-FLIGHT DEDUPLICATION CHECK
+          # =========================================================================
+          echo "🔎 Running Pre-Flight Deduplication Check..."
+          declare -A TARGET_MAP
+          HAS_COLLISION=0
+          
+          for dir in "${DIRS[@]}"; do
+            if [ -d "$dir" ]; then
+              for file in "$dir"/*; do
+                if [ -f "$file" ]; then
+                  CONTENT_HASH=$(git hash-object "$file" | cut -c1-7)
+                  ext="${file##*.}"
+                  filename=$(basename "$file")
+                  base="${filename%.*}"
+                  new_base=$(echo "$base" | sed -E 's/_[a-f0-9]+$//')
+                  new_filename="${new_base}_${CONTENT_HASH}.${ext}"
+                  target_path="$dir/$new_filename"
+                  
+                  # Verify if this normalized destination path has already been claimed
+                  if [ -n "${TARGET_MAP[$target_path]+xyz}" ]; then
+                    echo "❌ CRITICAL HIT: Duplicate Asset Namespace Collision!"
+                    echo "   Multiple tracking targets resolve to the identical path: $target_path"
+                    echo "   - Entity Conflicting [A]: ${TARGET_MAP[$target_path]}"
+                    echo "   - Entity Conflicting [B]: $file"
+                    HAS_COLLISION=1
+                  else
+                    TARGET_MAP[$target_path]="$file"
+                  fi
+                fi
+              done
+            fi
+          done
+          
+          if [ $HAS_COLLISION -ne 0 ]; then
+            echo "❌ Terminating Workflow: Deduplication validations failed. Clean up matching redundant payloads."
+            exit 1
+          fi
+          echo "✅ Pre-flight validation clear. Initiating migration sequence..."
+          
+          # =========================================================================
+          # 🔄 MIGRATION & REFERENCE SWEEP PIPELINE
+          # =========================================================================
+          for dir in "${DIRS[@]}"; do
+            if [ -d "$dir" ]; then
+              for file in "$dir"/*; do
+                if [ -f "$file" ]; then
+                  # Generate a hash based purely on the FILE CONTENT (7 characters)
+                  CONTENT_HASH=$(git hash-object "$file" | cut -c1-7)
+                  
+                  # Extract extension and base name
+                  ext="${file##*.}"
+                  filename=$(basename "$file")
+                  base="${filename%.*}"
+                  
+                  # Logic: If the file already contains the hash, skip renaming
+                  if [[ "$base" == *"_$CONTENT_HASH" ]]; then
+                    echo "✅ File $filename is already versioned correctly ($CONTENT_HASH). Skipping."
+                    continue
+                  fi
+                  
+                  # Remove any old hash suffix
+                  new_base=$(echo "$base" | sed -E 's/_[a-f0-9]+$//')
+                  new_filename="${new_base}_${CONTENT_HASH}.${ext}"
+                  
+                  echo "🔄 Renaming $filename to $new_filename"
+                  git mv "$file" "$dir/$new_filename"
 
-      #     INPUT_FILE="data/testing-input-output/input.json"
-      #     if [ ! -f "$INPUT_FILE" ]; then
-      #       echo "❌ CRITICAL ERROR: Input file context missing at $INPUT_FILE."
-      #       exit 1
-      #     fi
+                  # ---------------------------------------------------------
+                  # 🔍 INLINE DEEP SWEEP: Update references immediately
+                  # ---------------------------------------------------------
+                  
+                  echo "🔎 Searching everywhere for references to '$filename' ➔ '$new_filename'"
+                  
+                  # Find files that contain the old filename
+                  matches=$(grep -RIl "$filename" . || true)
 
-      #     # Run core execution module under verbose tool monitoring to record Peak Resident Set Size (RSS)
-      #     /usr/bin/time -v xvfb-run --auto-servernum python src/main.py \
-      #       --input_output_folder "${GITHUB_WORKSPACE}/data/testing-input-output/" \
-      #       --input_file_name "input.json" \
-      #       --output_file_name "output.json" 2> /tmp/memory_profile.log
+                  if [ -n "$matches" ]; then
+                    echo "📄 Found references in:"
+                    echo "$matches"
 
-      #     # Unwind profile monitoring immediately post-execution 
-      #     kill $SAMPLER_PID
+                    for mfile in $matches; do
+                      echo "✏️ Updating text inside: $mfile"
+                      
+                      # Perform the replacement using | as a delimiter
+                      sed -i "s|${filename}|${new_filename}|g" "$mfile"
+                      
+                      # Verification Step: Did the change actually happen?
+                      if grep -q "$new_filename" "$mfile"; then
+                        echo "  ✅ Verification passed: $new_filename found in $mfile"
+                        git add "$mfile"
+                      else
+                        echo "  ❌ ERROR: Replacement failed for $mfile. Trying alternative format."
+                        # Fallback: sometimes paths inside JSON require escaping
+                        sed -i "s|${filename//\//\\/}|${new_filename//\//\\/}|g" "$mfile"
+                      fi
+                    done
+                  else
+                    echo "ℹ️ No references found for $filename"
+                  fi
+                  # ---------------------------------------------------------
+                fi
+              done
+            fi
+          done
+          
+          # =========================================================================
+          # 🚀 SAFE COMMIT EXECUTION (-uno filters out untracked changes)
+          # =========================================================================
+          if [ -n "$(git status -uno --porcelain)" ]; then
+            git commit -m "🤖 robot a: version-lock governance assets [skip ci]"
+            TARGET_COMMIT=$(git rev-parse HEAD)
 
-      #     # Standardize and isolate peak payload metric thresholds
-      #     PEAK_CPU=$(sort -n /tmp/cpu_track.log | tail -n 1)
-      #     if [ -z "$PEAK_CPU" ]; then PEAK_CPU="0.0"; fi
+            git fetch origin refs/notes/commits:refs/notes/commits || true
+            git notes add -f -m "robot: true" "$TARGET_COMMIT"
+            git push origin HEAD || echo "Push skipped."
+            git push --force origin refs/notes/commits || true
+            echo "🚀 Version lock successfully pushed to repository branch."
+          else
+            echo "✅ All tracked files are already perfectly version-locked. No new changes detected to commit."
+          fi
 
-      #     # Parse Peak Memory footprint values from verbose execution dump
-      #     MAX_RSS_KB=$(grep "Maximum resident set size" /tmp/memory_profile.log | awk '{print $6}')
-      #     if [ -z "$MAX_RSS_KB" ]; then
-      #       MAX_RSS_MB=$(free -m | awk '/Mem:/ { print $3 }')
-      #     else
-      #       MAX_RSS_MB=$((MAX_RSS_KB / 1024))
-      #     fi
-      #     TOTAL_MEM_MB=$(free -m | awk '/Mem:/ { print $2 }')
+      - name: 🔍 Forensic Audit
+        if: always()
+        run: |
+          if [[ "${{ job.status }}" == "success" ]]; then
+            echo "✅ All systems nominal. No anomalies detected."
+            cat <<EOF > debug/forensic_audit.sh
+          #!/bin/bash
+          # Description: Automated forensic audit for ACE solver failures.
+          # Status: Dormant (All systems nominal)
+          exit 0
+          EOF
+            chmod +x debug/forensic_audit.sh
+            echo "🧹 Diagnostic script reset to Dormant mode."
+          else
+            echo "⚠️ CI Failure Detected. Initiating Deep Forensic Audit..."
+            echo "============================================================"
+            echo "ls -R output:"
+            ls -R
+            echo "============================================================"
+            echo "debug/forensic_audit.sh run results:"
+            if [ -f "debug/forensic_audit.sh" ]; then
+              bash debug/forensic_audit.sh
+            else
+              echo "❌ Critical: Diagnostic script 'debug/forensic_audit.sh' not found."
+            fi
+            echo "============================================================"
+            echo "📉 RE-RUNNING FAILED TEST FOR FINAL SIGNAL"
+            $TEST_COMMAND || true
+            exit 1
+          fi
 
-      #     # Inject peak thresholds directly into environment runtime variables context
-      #     echo "PEAK_COMPUTE_LOAD=${PEAK_CPU}%" >> $GITHUB_ENV
-      #     echo "PEAK_MEM_USAGE=${MAX_RSS_MB}/${TOTAL_MEM_MB}MB" >> $GITHUB_ENV
-      #     echo "✅ Profiler teardown clean. Peak CPU: ${PEAK_CPU}%, Peak Memory: ${MAX_RSS_MB}/${TOTAL_MEM_MB}MB"
+      - name: 📊 Audit Performance Ledger & Sync
+        if: always()
+        run: |
+          # ⚠️ WARNING: git reset/clean deletes non-tracked files. 
+          # Ensure your simulation artifacts are already saved/uploaded before this step!
+          git reset --hard HEAD
+          git clean -ffdx
+          git pull origin HEAD --rebase
 
-      # - name: 🔍 Post-Execution Artifact Verification
-      #   run: |
-      #     # Verify that JSON output manifest has been deterministically compiled
-      #     echo "--- Verifying Generated Output Structure ---"
-      #     ls -l data/testing-input-output/output.json
+          RUN_DATE=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          STATUS="${{ job.status }}"
+          CURRENT_BRANCH=${GITHUB_REF##*/}
+          
+          # Inject true active peak metrics, using instant system calls only as an early step failure fallback
+          CPU_LOAD="${GOVERNANCE_ACTIVE_PEAK_CPU:-$(top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4 "%"}')}"
+          MEM_USAGE="${GOVERNANCE_ACTIVE_PEAK_MEM:-$(free -m | awk '/Mem:/ { print $3 "/" $2 "MB" }')}"
 
-      #     # Print output manifest summary for log tracing
-      #     head -n 30 data/testing-input-output/output.json
+          # New log entry
+          # Construct the URL for the current run
+          RUN_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+
+          NEW_ENTRY=$(cat <<EOF
+          ### Audit: $RUN_DATE
+          - **Branch:** \`$CURRENT_BRANCH\`
+          - **Status:** \`$STATUS\`
+          - **Run:** [Detailed Execution Logs]($RUN_URL)
+          - **CPU Load:** \`$CPU_LOAD\`
+          - **Memory Usage:** \`$MEM_USAGE\`
+          EOF
+          )
+
+          HEADER=$(cat <<EOF
+          # 🎬 Video Processing Simulator Library
+
+          Creates, validates, and stores the simulators tuning packages containing the execution pipeline, the configuration scenarios, and the instance-preparing installation script.
+
+          ### 📚 Resources & Documentation
+          - **Tutorial/Book:** ***currently in development***
+
+          ---
+
+          ### 🧮 Performance Audit:
+          EOF
+          )
+
+          if [ -f "README.md" ]; then
+              # Extract everything after the first audit entry to preserve historical runs
+              sed -n '/### Audit:/,$p' README.md > old_body.tmp
+              echo "$HEADER" > README.md
+              echo "$NEW_ENTRY" >> README.md
+              cat old_body.tmp >> README.md
+              rm old_body.tmp
+          else
+              # Initialize new README
+              echo "$HEADER" > README.md
+              echo "$NEW_ENTRY" >> README.md
+          fi
+
+          git add README.md
+
+          if [ -n "$(git status --porcelain README.md)" ]; then
+            git commit -m "🤖 robot a: audit ledger update [${{ job.status }}] [skip ci]"
+            TARGET_COMMIT=$(git rev-parse HEAD)
+
+            # Fetch remote notes
+            git fetch origin refs/notes/commits:refs/notes/commits || true
+
+            # Attach Git note locally
+            git notes add -f -m "robot: true" "$TARGET_COMMIT"
+
+            # Push commit and notes
+            git pull origin HEAD --rebase || echo "Rebase failed, pushing without rebase."
+            git push origin HEAD
+            git push --force origin refs/notes/commits || true
+          else
+            echo "No ledger changes."
+          fi
       
-      # - name: 🛡 Post-Execution Schema Compliance Audit
-      #   run: |
-      #     echo "--- Running Standalone JSON Schema Verification ---"
-      #     python src/utils/validate_schema.py
+      - name: 🛠️ Retroactive Git Notes Corrector (All Automation Engines)
+        if: always()
+        run: |
+          echo "--- Starting Retroactive Git Notes Audit (All History) ---"          
+          # 1. Fetch remote notes first to ensure accurate state
+          git fetch origin refs/notes/commits:refs/notes/commits || true
 
-      # - name: 💾 Sync Testing Assets to Repository
-      #   if: always()
-      #   run: |
-      #     # 1. Stash local changes (including untracked files)
-      #     git stash -u
+          # 2. Find all commits in history made by any Automation Engine (scalable for A, B, C, etc.)
+          COMMIT_HASHES=$(git log --format="%H %an" | grep -E "Automation Engine" | awk '{print $1}')
 
-      #     # 2. Pull with '-X ours' to resolve binary conflicts
-      #     git pull origin HEAD --rebase -X ours
+          # 3. Identify all active automation engines found in commit history
+          ACTIVE_ENGINES=$(git log --format="%an" | grep -E "Automation Engine" | sort -u | tr '\n' ', ' | sed 's/,$//')
 
-      #     # 3. Restore stashed changes
-      #     git stash pop || true
+          if [ -z "$COMMIT_HASHES" ]; then
+            echo "No automation engine commits found in history."
+          else
+            TOTAL_COMMITS=0
+            ADDED_NOTES=0
 
-      #     # 4. Add the specific test folder
-      #     git add data/testing-input-output/
+            for COMMIT in $COMMIT_HASHES; do
+              TOTAL_COMMITS=$((TOTAL_COMMITS + 1))
+              
+              # 4. Check if the commit already has a git note
+              if ! git notes show "$COMMIT" >/dev/null 2>&1; then
+                echo "⚠️ Missing note detected for commit: $COMMIT. Adding note..."
+                git notes add -f -m "robot: true" "$COMMIT"
+                ADDED_NOTES=$((ADDED_NOTES + 1))
+              fi
+            done
 
-      #     # 5. Commit/Push with Notes
-      #     if [ -n "$(git status --porcelain data/testing-input-output/)" ]; then
-      #       git commit -m "🤖 robot b: sync testing assets [${{ job.status }}]"
-      #       TARGET_COMMIT=$(git rev-parse HEAD)
+            echo "--------------------------------------------------"
+            echo "📊 Git Notes Audit Summary:"
+            echo "   - Active Automation Engines:       [ ${ACTIVE_ENGINES:-None} ]"
+            echo "   - Total Automation Commits Scanned: $TOTAL_COMMITS"
+            echo "   - Missing Notes Fixed & Added:      $ADDED_NOTES"
+            echo "--------------------------------------------------"
 
-      #       # 1 Fetch remote notes FIRST
-      #       git fetch origin refs/notes/commits:refs/notes/commits || true
-
-      #       # 2 Add note locally
-      #       git notes add -f -m "robot: true" "$TARGET_COMMIT"
-
-      #       # 3 Push commit
-      #       git push origin HEAD || echo "Push skipped: branch protected."
-
-      #       # 4 Force-push notes
-      #       git push --force origin refs/notes/commits || true
-      #     else
-      #       echo "No testing asset changes detected. Sync skipped."
-      #     fi
-
-      # - name: 📊 Audit Performance Ledger & Sync
-      #   if: always()
-      #   run: |
-      #     git reset --hard HEAD
-      #     git clean -ffdx
-      #     git pull origin HEAD --rebase
-
-      #     RUN_DATE=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
-      #     STATUS="${{ job.status }}"
-      #     CURRENT_BRANCH=${GITHUB_REF##*/}
-
-      #     # Parse high-fidelity metrics populated during live engine load, fallback to idle if missing
-      #     CPU_LOAD="${PEAK_COMPUTE_LOAD:-$(top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4 "%"}')}"
-      #     MEM_USAGE="${PEAK_MEM_USAGE:-$(free -m | awk '/Mem:/ { print $3 "/" $2 "MB" }')}"
-
-      #     RUN_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-
-      #     NEW_ENTRY=$(cat <<'EOF'
-      #     ### Audit: $RUN_DATE
-      #     - **Branch:** \`$CURRENT_BRANCH\`
-      #     - **Status:** \`$STATUS\`
-      #     - **Run:** [Detailed Execution Logs]($RUN_URL)
-      #     - **CPU Load:** \`$CPU_LOAD\`
-      #     - **Memory Usage:** \`$MEM_USAGE\`
-      #     EOF
-      #     )
-
-      #     HEADER=$(cat <<'EOF'
-      #     # Replace this with project icon and project name
-
-      #     ## 🛠️ Description
-      #     Replace this with project description
-
-      #     ### 🔄 Execution Pipeline Architecture / Output
-
-      #     place here the output pictures or the module execution schema
-
-      #     ### 📚 Resources & Documentation
-      #     - **Tutorial/Book:** ***currently in development***
-
-      #     ---
-
-      #     ### 🧮 Performance Audit:
-
-      #     EOF
-      #     )
-
-      #     if [ -f "README.md" ]; then
-      #         sed -n '/### Audit:/,$p' README.md > old_body.tmp
-      #         echo "$HEADER" > README.md
-      #         echo "$NEW_ENTRY" >> README.md
-      #         cat old_body.tmp >> README.md
-      #         rm old_body.tmp
-      #     else
-      #         echo "$HEADER" > README.md
-      #         echo "$NEW_ENTRY" >> README.md
-      #     fi
-
-      #     git add README.md
-
-      #     if [ -n "$(git status --porcelain README.md)" ]; then
-      #       git commit -m "🤖 robot b: audit ledger update [${{ job.status }}] [skip ci]"
-      #       TARGET_COMMIT=$(git rev-parse HEAD)
-
-      #       # 1 Fetch remote notes
-      #       git fetch origin refs/notes/commits:refs/notes/commits || true
-
-      #       # 2 Add note locally
-      #       git notes add -f -m "robot: true" "$TARGET_COMMIT"
-
-      #       # 3 Push commit and notes
-      #       git pull origin HEAD --rebase || echo "Rebase failed, pushing without rebase."
-      #       git push origin HEAD
-      #       git push --force origin refs/notes/commits || true
-      #     else
-      #       echo "No ledger changes."
-      #     fi
-
-      # - name: 🔍 Forensic Audit
-      #   if: always()
-      #   run: |
-      #     if [[ "${{ job.status }}" == "success" ]]; then
-      #       echo "✅ All systems nominal. No anomalies detected in solver lifecycle."
-      #       cat <<'EOF' > debug/forensic_audit_validation.sh
-      #     #!/bin/bash
-      #     # Description: Automated forensic audit for failures within this repository.
-      #     # Status: Dormant (All systems nominal)
-      #     exit 0
-      #     EOF
-      #       chmod +x debug/forensic_audit_validation.sh
-      #       echo "🧹 Diagnostic script has been reset to Dormant mode."
-      #     else
-      #       echo "⚠️ CI Failure Detected. Initiating Deep Forensic Audit..."
-      #       echo "============================================================"
-      #       echo "ls -R output:"
-      #       ls -R || echo "output dir not found"
-      #       echo "============================================================"
-      #       echo "debug/forensic_audit_validation.sh run results:"
-      #       if [ -f "debug/forensic_audit_validation.sh" ]; then
-      #         bash debug/forensic_audit_validation.sh
-      #       else
-      #         echo "❌ Critical: Diagnostic script 'debug/forensic_audit_validation.sh' not found."
-      #       fi
-      #       exit 1
-      #     fi
-
-      # - name: 🧹 Sync Forensic Reset
-      #   # This only runs if the '🔍 Forensic Audit' step and tests passed
-      #   if: success()
-      #   run: |
-      #     git add debug/forensic_audit_validation.sh
-      #     if [ -n "$(git status --porcelain debug/forensic_audit_validation.sh)" ]; then
-      #       git commit -m "🤖 robot b: forensic reset [PASS]"
-      #       TARGET_COMMIT=$(git rev-parse HEAD)
-
-      #       # 1 Fetch remote notes FIRST
-      #       git fetch origin refs/notes/commits:refs/notes/commits || true
-
-      #       # 2 Add note locally
-      #       git notes add -f -m "robot: true" "$TARGET_COMMIT"
-
-      #       # 3 Push commit
-      #       git push origin HEAD || echo "Push skipped: concurrent push detected."
-
-      #       # 4 Force-push notes
-      #       git push --force origin refs/notes/commits || true
-      #     else
-      #       echo "Forensic script already dormant."
-      #     fi
-
-      # - name: 🛠️ Retroactive Git Notes Corrector (All Automation Engines)
-      #   if: always()
-      #   run: |
-      #     echo "--- Starting Retroactive Git Notes Audit (All History) ---"
-
-      #     # 1. Fetch remote notes first to ensure accurate state
-      #     git fetch origin refs/notes/commits:refs/notes/commits || true
-
-      #     # 2. Find all commits in history made by any Automation Engine
-      #     COMMIT_HASHES=$(git log --format="%H %an" | grep -E "Automation Engine" | awk '{print $1}')
-
-      #     # 3. Identify all active automation engines found in commit history
-      #     ACTIVE_ENGINES=$(git log --format="%an" | grep -E "Automation Engine" | sort -u | tr '\n' ', ' | sed 's/,$//')
-
-      #     if [ -z "$COMMIT_HASHES" ]; then
-      #       echo "No automation engine commits found in history."
-      #     else
-      #       TOTAL_COMMITS=0
-      #       ADDED_NOTES=0
-
-      #       for COMMIT in $COMMIT_HASHES; do
-      #         TOTAL_COMMITS=$((TOTAL_COMMITS + 1))
-
-      #         # 4. Check if the commit already has a git note
-      #         if ! git notes show "$COMMIT" >/dev/null 2>&1; then
-      #           echo "⚠️ Missing note detected for commit: $COMMIT. Adding note..."
-      #           git notes add -f -m "robot: true" "$COMMIT"
-      #           ADDED_NOTES=$((ADDED_NOTES + 1))
-      #         fi
-      #       done
-
-      #       echo "--------------------------------------------------"
-      #       echo "📊 Git Notes Audit Summary:"
-      #       echo "   - Active Automation Engines:       [ ${ACTIVE_ENGINES:-None} ]"
-      #       echo "   - Total Automation Commits Scanned: $TOTAL_COMMITS"
-      #       echo "   - Missing Notes Fixed & Added:      $ADDED_NOTES"
-      #       echo "--------------------------------------------------"
-
-      #       # 5. Force-push the synchronized notes namespace to origin
-      #       echo "Pushing updated notes to remote..."
-      #       git push --force origin refs/notes/commits || echo "Notes push skipped or protected."
-      #     fi
+            # 5. Force-push the synchronized notes namespace to origin
+            echo "Pushing updated notes to remote..."
+            git push --force origin refs/notes/commits || echo "Notes push skipped or protected."
+          fi
