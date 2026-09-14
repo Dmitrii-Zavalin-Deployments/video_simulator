@@ -23,7 +23,7 @@ python -m pip install --upgrade pip
 # 2. Batched Dependency Installation
 log "📦 Installing Python dependencies in batch (Grouped by Architectural Rules)..."
 
-cat < /tmp/video_simulator_requirements.txt
+cat << 'EOF' > /tmp/video_simulator_requirements.txt
 # Contract Enforcement
 jsonschema>=4.23.0
 
