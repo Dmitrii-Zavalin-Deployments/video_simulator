@@ -1,6 +1,6 @@
 #!/bin/bash
 # ==============================================================================
-# requirements.sh - Unified Environmental Provisioning & Binary Layer Setup
+# requirements.sh - Unified Environmental Provisioning & Path Resolution
 # ==============================================================================
 
 # Keep 'set +e' to handle errors manually
@@ -21,7 +21,7 @@ log "📦 Upgrading pip..."
 python -m pip install --upgrade pip
 
 # 2. Batched Dependency Installation
-log "📦 Installing Python dependencies in batch (Grouped by Architectural Rules)..."
+log "📦 Installing Python dependencies in batch..."
 
 cat << 'EOF' > /tmp/video_simulator_requirements.txt
 # Contract Enforcement
@@ -45,5 +45,18 @@ if [ $PIP_EXIT -ne 0 ]; then
     exit 1
 fi
 
-log "✅ All dependencies installed successfully."
-log "✅ Environment ready for video simulator execution."
+log "✅ All base dependencies installed successfully."
+
+# 3. Sub-Repository Path Discovery & PYTHONPATH Injection
+log "🔌 Configuring PYTHONPATH for sub-repositories (e.g., video_frame_extractor)..."
+export PYTHONPATH="\(PYTHONPATH:\)(pwd)"
+
+# Automatically find and export 'src' directories of any cloned sub-repositories
+for subrepo_src in $(find . -type d -name "src"); do
+    if [[ "\(subrepo_src" == *"repositories"* ]] || [[ "\)subrepo_src" == *"input-output"* ]]; then
+        export PYTHONPATH="\(PYTHONPATH:\)(realpath "$subrepo_src")"
+        log "📂 Registered sub-repo path: \((realpath "\)subrepo_src")"
+    fi
+done
+
+log "✅ Environment and sub-repo paths ready for video simulator execution."
