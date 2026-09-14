@@ -14,13 +14,23 @@ log "🚀 Provisioning runtime environment for Video Processing Simulator (Cold 
 # 0. Pre-installation environment check
 log "📋 Initial Environment State:"
 python --version
-pip list | head -n 5 
+pip list | head -n 5
 
-# 1. Pip Upgrade
+# 1. Conda Installation 
+# Note: Ensure 'conda-solver: libmamba' is set in your Actions YAML for maximum speed
+log "📦 Installing base binary layers via Conda..."
+conda install -y -c conda-forge pythonocc-core gmsh numpy pip matplotlib
+if [ $? -ne 0 ]; then 
+    log "❌ ERROR: Conda install failed."
+    exit 1
+fi
+log "✅ Base Conda dependencies installed."
+
+# 2. Pip Upgrade
 log "📦 Upgrading pip..."
 python -m pip install --upgrade pip
 
-# 2. Batched Dependency Installation
+# 3. Batched Dependency Installation
 log "📦 Installing Python dependencies in batch (Grouped by Architectural Rules)..."
 
 cat << 'EOF' > /tmp/video_simulator_requirements.txt
