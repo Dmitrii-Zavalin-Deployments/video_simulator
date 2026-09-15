@@ -10,6 +10,13 @@
       "version_tag": "main",
       "input_file_name": "video_frames_extractor_input.json",
       "output_file_name": "video_frames_extractor_output.json"
+    },
+    {
+      "order": 2,
+      "repository_url": "https://github.com/Dmitrii-Zavalin-Deployments/artland_ai.git",
+      "version_tag": "main",
+      "input_file_name": "artland_ai_input.json",
+      "output_file_name": "artland_ai_output.json"
     }
   ]
 }

@@ -27,9 +27,12 @@ cat << 'EOF' > /tmp/video_simulator_requirements.txt
 # Contract Enforcement
 jsonschema>=4.23.0
 
-# Core Dependencies
-opencv-python-headless
-Pillow
+# Scientific & Image Processing Pipeline
+opencv-python-headless>=4.9.0
+scikit-image>=0.22.0
+scikit-learn>=1.3.0
+numpy>=1.26.0
+Pillow>=10.0.0
 EOF
 
 python -m pip install --no-cache-dir -r /tmp/video_simulator_requirements.txt
