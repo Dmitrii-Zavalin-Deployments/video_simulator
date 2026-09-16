@@ -33,6 +33,9 @@ scikit-image>=0.22.0
 scikit-learn>=1.3.0
 numpy>=1.26.0
 Pillow>=10.0.0
+
+# Video Processing Stack (Browser-Compatible H.264 PyAV)
+av>=11.0.0
 EOF
 
 python -m pip install --no-cache-dir -r /tmp/video_simulator_requirements.txt
