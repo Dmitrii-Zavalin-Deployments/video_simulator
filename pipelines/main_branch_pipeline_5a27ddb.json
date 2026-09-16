@@ -17,6 +17,13 @@
       "version_tag": "main",
       "input_file_name": "artland_ai_input.json",
       "output_file_name": "artland_ai_output.json"
+    },
+    {
+      "order": 3,
+      "repository_url": "https://github.com/Dmitrii-Zavalin-Deployments/video_generator.git",
+      "version_tag": "main",
+      "input_file_name": "artland_ai_input.json",
+      "output_file_name": "artland_ai_output.json"
     }
   ]
 }
