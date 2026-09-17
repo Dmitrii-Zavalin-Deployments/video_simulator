@@ -1,7 +1,7 @@
 {
   "description": "Executes the fluid dynamics simulation workflow by generating a computational mesh, restructuring simulation data, and running the Bernoulli solver engine.",
-  "config": "configs/main_branch_config_4c88e95.json",
-  "setup_script": "setup_scripts/main_branch_solver_setup_9503c94.sh",
+  "config": "configs/main_branch_config_2.json",
+  "setup_script": "setup_scripts/main_branch_solver_setup.sh",
   "modules_input_output_folder": "input-output",
   "execution_chain": [
     {
@@ -13,6 +13,13 @@
     },
     {
       "order": 2,
+      "repository_url": "https://github.com/Dmitrii-Zavalin-Deployments/artland_ai.git",
+      "version_tag": "main",
+      "input_file_name": "artland_ai_input.json",
+      "output_file_name": "artland_ai_output.json"
+    },
+    {
+      "order": 3,
       "repository_url": "https://github.com/Dmitrii-Zavalin-Deployments/video_generator.git",
       "version_tag": "main",
       "input_file_name": "video_generator_input.json",
