@@ -8,22 +8,22 @@
       "order": 1,
       "repository_url": "https://github.com/Dmitrii-Zavalin-Deployments/video_frame_extractor.git",
       "version_tag": "prototype_2",
-      "input_file_name": "video_frames_extractor_input.json",
-      "output_file_name": "video_frames_extractor_output.json"
+      "input_file_name": "video_frames_extractor_input_4.json",
+      "output_file_name": "video_frames_extractor_output_4.json"
     },
     {
       "order": 2,
       "repository_url": "https://github.com/Dmitrii-Zavalin-Deployments/artland_ai.git",
       "version_tag": "prototype_3",
-      "input_file_name": "artland_ai_input.json",
-      "output_file_name": "artland_ai_output.json"
+      "input_file_name": "artland_ai_input_4.json",
+      "output_file_name": "artland_ai_output_4.json"
     },
     {
       "order": 3,
       "repository_url": "https://github.com/Dmitrii-Zavalin-Deployments/video_generator.git",
       "version_tag": "prototype_2",
-      "input_file_name": "video_generator_input.json",
-      "output_file_name": "video_generator_output.json"
+      "input_file_name": "video_generator_input_4.json",
+      "output_file_name": "video_generator_output_4.json"
     }
   ]
 }
