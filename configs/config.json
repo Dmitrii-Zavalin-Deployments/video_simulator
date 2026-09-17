@@ -57,43 +57,43 @@
   },
   "artistic_painting": {
     "bilateral_d": [
-      9
+      5,9,7
     ],
     "sigma_color": [
-      70
+      30,70,50
     ],
     "sigma_space": [
-      70
+      30,70,50
     ],
     "canny_threshold1": [
-      100
+      60,100,80
     ],
     "canny_threshold2": [
-      200
+      120,200,160
     ],
     "depth_alpha": [
-      1.3
+      1.1,1.3,1.2
     ],
     "depth_beta": [
-      20
+      5,20,10
     ],
     "saturation_multiplier": [
-      1.30
+      1.10,1.30,1.20
     ],
     "brightness_multiplier": [
-      1.20
+      1.05,1.20,1.10
     ],
     "stylization_sigma_s": [
-      100
+      30,100,60
     ],
     "stylization_sigma_r": [
-      0.30
+      0.15,0.3,0.25
     ],
     "detail_sigma_s": [
       10
     ],
     "detail_sigma_r": [
-      0.10
+      0.15,0.1
     ]
   },
   "expand_image": {
