@@ -57,25 +57,25 @@
   },
   "artistic_painting": {
     "bilateral_d": [
-      7
+      9
     ],
     "sigma_color": [
-      50
+      60
     ],
     "sigma_space": [
-      50
+      60
     ],
     "canny_threshold1": [
-      80
+      90
     ],
     "canny_threshold2": [
-      160
+      180
     ],
     "depth_alpha": [
-      1.2
+      1.25
     ],
     "depth_beta": [
-      10
+      12
     ],
     "saturation_multiplier": [
       1.20
@@ -84,7 +84,7 @@
       1.10
     ],
     "stylization_sigma_s": [
-      60
+      70
     ],
     "stylization_sigma_r": [
       0.25

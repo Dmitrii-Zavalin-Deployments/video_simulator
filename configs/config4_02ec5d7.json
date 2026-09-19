@@ -72,28 +72,28 @@
       120
     ],
     "depth_alpha": [
-      1.1
+      1.25
     ],
     "depth_beta": [
-      5
+      15
     ],
     "saturation_multiplier": [
-      1.10
+      1.35
     ],
     "brightness_multiplier": [
-      1.05
+      1.15
     ],
     "stylization_sigma_s": [
-      30
+      35
     ],
     "stylization_sigma_r": [
       0.15
     ],
     "detail_sigma_s": [
-      10
+      12
     ],
     "detail_sigma_r": [
-      0.15
+      0.12
     ]
   },
   "expand_image": {

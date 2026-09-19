@@ -84,16 +84,16 @@
       1.10
     ],
     "stylization_sigma_s": [
-      60
+      50
     ],
     "stylization_sigma_r": [
-      0.25
+      0.20
     ],
     "detail_sigma_s": [
       10
     ],
     "detail_sigma_r": [
-      0.1
+      0.15
     ]
   },
   "expand_image": {
