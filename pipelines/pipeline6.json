@@ -1,0 +1,29 @@
+{
+  "description": "Executes the fluid dynamics simulation workflow by generating a computational mesh, restructuring simulation data, and running the Bernoulli solver engine.",
+  "config": "configs/config6.json",
+  "setup_script": "setup_scripts/solver_setup_9503c94.sh",
+  "modules_input_output_folder": "input-output",
+  "execution_chain": [
+    {
+      "order": 1,
+      "repository_url": "https://github.com/Dmitrii-Zavalin-Deployments/video_frame_extractor.git",
+      "version_tag": "prototype_2",
+      "input_file_name": "video_frames_extractor_input6.json",
+      "output_file_name": "video_frames_extractor_output6.json"
+    },
+    {
+      "order": 2,
+      "repository_url": "https://github.com/Dmitrii-Zavalin-Deployments/artland_ai.git",
+      "version_tag": "prototype_3",
+      "input_file_name": "artland_ai_input6.json",
+      "output_file_name": "artland_ai_output6.json"
+    },
+    {
+      "order": 3,
+      "repository_url": "https://github.com/Dmitrii-Zavalin-Deployments/video_generator.git",
+      "version_tag": "prototype_2",
+      "input_file_name": "video_generator_input6.json",
+      "output_file_name": "video_generator_output6.json"
+    }
+  ]
+}
